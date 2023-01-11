@@ -7,13 +7,13 @@ import com.terrinc.shopinglist.domain.ShopListRepository
 
 object ShopListRepositoryImp : ShopListRepository {
 
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private val shopListLD = MutableLiveData<List<ShopItem>>()
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 10) {
-            addShopItem(ShopItem("$i", i, true ))
+        for (i in 0 until 20) {
+            addShopItem(ShopItem("$i", i, true))
         }
     }
 
