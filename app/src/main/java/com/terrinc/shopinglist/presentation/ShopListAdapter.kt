@@ -14,9 +14,17 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     private var shopList = listOf<ShopItem>()
     private var count = 0
 
+    var shopItemClickListener: ((ShopItem) -> Unit)? = null
+    var shopItemLongClickListener: ((ShopItem) -> Unit)? = null
+
     fun setShopList(newShopList: List<ShopItem>) {
         shopList = newShopList
         notifyDataSetChanged()
+    }
+
+    fun getShopItem(position: Int): ShopItem {
+        if (position >= shopList.size) throw IllegalArgumentException("Element with position $position not found")
+        return shopList[position]
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
@@ -33,7 +41,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         holder.bind(shopList[position])
         holder.view.setOnLongClickListener {
+            shopItemLongClickListener?.invoke(shopList[position])
             true
+        }
+        holder.view.setOnClickListener{
+            shopItemClickListener?.invoke(shopList[position])
         }
     }
 
@@ -43,20 +55,18 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun getItemCount(): Int = shopList.size
 
-    companion object {
-        const val ENABLED_TYPE = 10
-        const val DISABLED_TYPE = 11
-        const val MAX_POOL_SIZE = 5
-    }
-
     class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         private val tvName = view.findViewById<TextView>(R.id.name)
         private val tvCount = view.findViewById<TextView>(R.id.count)
-
-
         fun bind(shopItem: ShopItem) {
             tvName.text = shopItem.name
             tvCount.text = shopItem.count.toString()
         }
+    }
+
+    companion object {
+        const val ENABLED_TYPE = 10
+        const val DISABLED_TYPE = 11
+        const val MAX_POOL_SIZE = 15
     }
 }
