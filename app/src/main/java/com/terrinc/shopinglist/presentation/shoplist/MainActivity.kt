@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shoplist
 
 import android.os.Bundle
 import android.util.Log

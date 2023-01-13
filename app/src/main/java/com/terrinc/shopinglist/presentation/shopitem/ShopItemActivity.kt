@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shopitem
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

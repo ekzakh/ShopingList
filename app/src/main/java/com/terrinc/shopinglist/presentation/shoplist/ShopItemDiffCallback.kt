@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shoplist
 
 import androidx.recyclerview.widget.DiffUtil
 import com.terrinc.shopinglist.domain.ShopItem

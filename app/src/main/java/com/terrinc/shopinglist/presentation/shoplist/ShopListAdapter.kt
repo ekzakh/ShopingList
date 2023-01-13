@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shoplist
 
 import android.util.Log
 import android.view.LayoutInflater

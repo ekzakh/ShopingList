@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shoplist
 
 import android.view.View
 import android.widget.TextView

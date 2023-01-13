@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shoplist
 
 import androidx.lifecycle.ViewModel
 import com.terrinc.shopinglist.data.ShopListRepositoryImp
