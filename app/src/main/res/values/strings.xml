@@ -4,4 +4,6 @@
     <string name="name">Name</string>
     <string name="count">Count</string>
     <string name="save">Save</string>
+    <string name="error_input_name">Name should have some characters</string>
+    <string name="error_input_count">Count should be a digit</string>
 </resources>
