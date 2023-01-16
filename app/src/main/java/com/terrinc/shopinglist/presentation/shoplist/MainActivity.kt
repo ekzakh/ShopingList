@@ -1,4 +1,4 @@
-package com.terrinc.shopinglist.presentation
+package com.terrinc.shopinglist.presentation.shoplist
 
 import android.os.Bundle
 import android.util.Log
@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.terrinc.shopinglist.R
+import com.terrinc.shopinglist.presentation.shopitem.ShopItemActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -19,6 +21,10 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) { shopList ->
             shopListAdapter.submitList(shopList)
+        }
+        val button = findViewById<FloatingActionButton>(R.id.addButton)
+        button.setOnClickListener {
+            startActivity(ShopItemActivity.newIntentAddItem(this))
         }
     }
 
@@ -38,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListener() {
         shopListAdapter.shopItemClickListener = { shopItem ->
             Log.d("MainActivity", "shopItemClick: $shopItem")
+            startActivity(ShopItemActivity.newIntentEditItem(this, shopItem.id))
         }
     }
 

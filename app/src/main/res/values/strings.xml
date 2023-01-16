@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">ShoppingList</string>
     <string name="add_shop_item">Add new shop item</string>
+    <string name="name">Name</string>
+    <string name="count">Count</string>
+    <string name="save">Save</string>
+    <string name="error_input_name">Name should have some characters</string>
+    <string name="error_input_count">Count should be a digit</string>
 </resources>
