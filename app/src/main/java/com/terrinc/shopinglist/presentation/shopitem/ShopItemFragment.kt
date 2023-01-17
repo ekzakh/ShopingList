@@ -1,5 +1,6 @@
 package com.terrinc.shopinglist.presentation.shopitem
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -27,6 +28,17 @@ class ShopItemFragment : Fragment() {
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
+    private lateinit var editFinishedListener: EditFinishedListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is EditFinishedListener) {
+            editFinishedListener = context
+        } else {
+            throw RuntimeException("Activity mas implement EditFinishedListener")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parseParams()
@@ -53,7 +65,7 @@ class ShopItemFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            editFinishedListener.onEditFinished()
         }
         viewModel.errorInputName.observe(viewLifecycleOwner) { isError ->
             tilName.error = if (isError) getString(R.string.error_input_name) else null
@@ -124,6 +136,10 @@ class ShopItemFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
         buttonSave = view.findViewById(R.id.saveButton)
+    }
+
+    interface EditFinishedListener {
+        fun onEditFinished()
     }
 
     companion object {
