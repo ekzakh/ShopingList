@@ -3,25 +3,12 @@ package com.terrinc.shopinglist.presentation.shopitem
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.terrinc.shopinglist.R
 import com.terrinc.shopinglist.domain.ShopItem
 
 class ShopItemActivity : AppCompatActivity() {
 
-    private lateinit var tilName: TextInputLayout
-    private lateinit var tilCount: TextInputLayout
-    private lateinit var etName: TextInputEditText
-    private lateinit var etCount: TextInputEditText
-    private lateinit var buttonSave: Button
-
-    private lateinit var viewModel: ShopItemViewModel
     private var screenMode = UNKNOWN_MODE
     private var shopItemId = ShopItem.UNDEFINED_ID
 
@@ -29,42 +16,18 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        initViews()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        when(screenMode) {
-            EDIT_MODE -> launchEditMode()
-            ADD_MODE -> launchAddMode()
-        }
-        observeViewModel()
+        launchRightMode()
     }
 
-    private fun observeViewModel() {
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
+    private fun launchRightMode() {
+        val fragment = when (screenMode) {
+            EDIT_MODE -> ShopItemFragment.newIntentEditItem(shopItemId)
+            ADD_MODE -> ShopItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
-        viewModel.errorInputName.observe(this) { isError ->
-            tilName.error = if (isError) getString(R.string.error_input_name) else null
-        }
-        viewModel.errorInputCount.observe(this) { isError ->
-            tilCount.error = if (isError) getString(R.string.error_input_count) else null
-        }
-    }
-
-    private fun launchEditMode() {
-        viewModel.shopItem.observe(this) { shopItem ->
-            etName.setText(shopItem.name)
-            etCount.setText(shopItem.count.toString())
-        }
-        viewModel.getShopItem(shopItemId)
-        buttonSave.setOnClickListener {
-            viewModel.editShopItem(etName.text.toString(), etCount.text.toString())
-        }
-    }
-
-    private fun launchAddMode() {
-        buttonSave.setOnClickListener {
-            viewModel.addShopItem(etName.text.toString(), etCount.text.toString())
-        }
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_container, fragment)
+            .commit()
     }
 
     private fun parseIntent() {
@@ -82,32 +45,6 @@ class ShopItemActivity : AppCompatActivity() {
             }
             shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
-    }
-
-    private fun initViews() {
-        tilName = findViewById(R.id.tilName)
-        tilCount = findViewById(R.id.tilCount)
-        etName = findViewById(R.id.nameInput)
-        etCount = findViewById(R.id.countInput)
-
-        etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputName()
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-        etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputCount()
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-        buttonSave = findViewById(R.id.saveButton)
     }
 
     companion object {
