@@ -16,12 +16,14 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        launchRightMode()
+        if (savedInstanceState == null) {
+            launchRightMode()
+        }
     }
 
     private fun launchRightMode() {
         val fragment = when (screenMode) {
-            EDIT_MODE -> ShopItemFragment.newIntentEditItem(shopItemId)
+            EDIT_MODE -> ShopItemFragment.newInstanceEditItem(shopItemId)
             ADD_MODE -> ShopItemFragment.newInstanceAddItem()
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
