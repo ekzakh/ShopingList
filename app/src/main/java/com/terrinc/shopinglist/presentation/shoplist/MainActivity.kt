@@ -6,16 +6,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.terrinc.shopinglist.R
+import com.terrinc.shopinglist.data.ShopListRepositoryImp
+import com.terrinc.shopinglist.presentation.common.ShopListViewModelFactory
 import com.terrinc.shopinglist.presentation.shopitem.ShopItemActivity
 import com.terrinc.shopinglist.presentation.shopitem.ShopItemFragment
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener {
-    private lateinit var viewModel: MainViewModel
+
+    private val viewModel by lazy {
+        ShopListViewModelFactory(ShopListRepositoryImp(application)).create(ShopListViewModel::class.java)
+    }
     private lateinit var shopListAdapter: ShopListAdapter
     private var shopItemContainer: FragmentContainerView? = null
 
@@ -24,7 +28,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
         setContentView(R.layout.activity_main)
         shopItemContainer = findViewById(R.id.shopItemContainer)
         setupRecycler()
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) { shopList ->
             shopListAdapter.submitList(shopList)
         }
@@ -101,7 +104,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
 
     override fun onEditFinished() {
         Toast.makeText(this, getString(R.string.success), Toast.LENGTH_SHORT).show()
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
     }
 
 }
