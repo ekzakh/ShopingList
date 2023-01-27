@@ -1,15 +1,15 @@
 package com.terrinc.shopinglist.presentation.shoplist
 
 import androidx.lifecycle.ViewModel
-import com.terrinc.shopinglist.data.ShopListRepositoryImp
+import androidx.lifecycle.viewModelScope
 import com.terrinc.shopinglist.domain.DeleteShopItemUseCase
 import com.terrinc.shopinglist.domain.EditShopItemUseCase
 import com.terrinc.shopinglist.domain.GetShopListUseCase
 import com.terrinc.shopinglist.domain.ShopItem
+import com.terrinc.shopinglist.domain.ShopListRepository
+import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
-
-    private val repository = ShopListRepositoryImp
+class ShopListViewModel(repository: ShopListRepository) : ViewModel() {
 
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
@@ -18,11 +18,15 @@ class MainViewModel: ViewModel() {
     val shopList = getShopListUseCase.getList()
 
     fun deleteShopItem(shopItem: ShopItem) {
-        deleteShopItemUseCase.deleteItem(shopItem)
+        viewModelScope.launch {
+            deleteShopItemUseCase.deleteItem(shopItem)
+        }
     }
 
     fun changeEnableStateShopItem(shopItem: ShopItem) {
         val newItem = shopItem.copy(enabled = !shopItem.enabled)
-        editShopItemUseCase.editItem(newItem)
+        viewModelScope.launch {
+            editShopItemUseCase.editItem(newItem)
+        }
     }
 }

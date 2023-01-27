@@ -9,11 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.terrinc.shopinglist.R
+import com.terrinc.shopinglist.data.ShopListRepositoryImp
 import com.terrinc.shopinglist.domain.ShopItem
+import com.terrinc.shopinglist.presentation.common.ShopListViewModelFactory
 
 class ShopItemFragment : Fragment() {
 
@@ -23,7 +24,11 @@ class ShopItemFragment : Fragment() {
     private lateinit var etCount: TextInputEditText
     private lateinit var buttonSave: Button
 
-    private lateinit var viewModel: ShopItemViewModel
+    private val viewModel by lazy {
+        ShopListViewModelFactory(
+            ShopListRepositoryImp(requireActivity().application)
+        ).create(ShopItemViewModel::class.java)
+    }
 
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
@@ -55,7 +60,6 @@ class ShopItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         when (screenMode) {
             EDIT_MODE -> launchEditMode()
             ADD_MODE -> launchAddMode()
