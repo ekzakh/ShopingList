@@ -3,15 +3,15 @@ package com.terrinc.shopinglist.presentation.shopitem
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.terrinc.shopinglist.data.ShopListRepositoryImp
+import androidx.lifecycle.viewModelScope
 import com.terrinc.shopinglist.domain.AddShopItemUseCase
 import com.terrinc.shopinglist.domain.EditShopItemUseCase
 import com.terrinc.shopinglist.domain.GetShopItemUseCase
 import com.terrinc.shopinglist.domain.ShopItem
+import com.terrinc.shopinglist.domain.ShopListRepository
+import kotlinx.coroutines.launch
 
-class ShopItemViewModel : ViewModel() {
-
-    private val repository = ShopListRepositoryImp
+class ShopItemViewModel(repository: ShopListRepository) : ViewModel() {
 
     private val saveShopItemUseCase = AddShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
@@ -34,16 +34,20 @@ class ShopItemViewModel : ViewModel() {
         get() = _shouldCloseScreen
 
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getItem(shopItemId)
-        _shopItem.value = item
+        viewModelScope.launch {
+            val item = getShopItemUseCase.getItem(shopItemId)
+            _shopItem.value = item
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
-            saveShopItemUseCase.addItem(ShopItem(name, count))
-            finishWork()
+            viewModelScope.launch {
+                saveShopItemUseCase.addItem(ShopItem(name, count))
+                finishWork()
+            }
         }
     }
 
@@ -52,9 +56,11 @@ class ShopItemViewModel : ViewModel() {
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
             _shopItem.value?.let { item ->
-                editShopItemUseCase.editItem(item.copy(name = name, count = count))
+                viewModelScope.launch {
+                    editShopItemUseCase.editItem(item.copy(name = name, count = count))
+                    finishWork()
+                }
             }
-            finishWork()
         }
     }
 
