@@ -1,8 +1,9 @@
 package com.terrinc.shopinglist.data
 
 import com.terrinc.shopinglist.domain.ShopItem
+import javax.inject.Inject
 
-class ShopItemMapperImp: ShopItemMapper {
+class ShopItemMapperImp @Inject constructor(): ShopItemMapper {
 
     override fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemDbModel(
         id = shopItem.id,

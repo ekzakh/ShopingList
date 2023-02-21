@@ -10,12 +10,13 @@ import com.terrinc.shopinglist.domain.GetShopItemUseCase
 import com.terrinc.shopinglist.domain.ShopItem
 import com.terrinc.shopinglist.domain.ShopListRepository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ShopItemViewModel(repository: ShopListRepository) : ViewModel() {
-
-    private val saveShopItemUseCase = AddShopItemUseCase(repository)
-    private val editShopItemUseCase = EditShopItemUseCase(repository)
-    private val getShopItemUseCase = GetShopItemUseCase(repository)
+class ShopItemViewModel @Inject constructor(
+    private val saveShopItemUseCase: AddShopItemUseCase,
+    private val editShopItemUseCase: EditShopItemUseCase,
+    private val getShopItemUseCase: GetShopItemUseCase,
+) : ViewModel() {
 
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>

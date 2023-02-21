@@ -1,15 +1,17 @@
 package com.terrinc.shopinglist.data
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import com.terrinc.shopinglist.di.AppScope
 import com.terrinc.shopinglist.domain.ShopItem
 import com.terrinc.shopinglist.domain.ShopListRepository
+import javax.inject.Inject
 
-class ShopListRepositoryImp(application: Application) : ShopListRepository {
-
-    private val shopListDao = AppDatabase.getInstance(application).shopItemDao()
-    private val mapper = ShopItemMapperImp()
+@AppScope
+class ShopListRepositoryImp @Inject constructor(
+    private val shopListDao: ShopListDao,
+    private val mapper: ShopItemMapper,
+) : ShopListRepository {
 
     override suspend fun addShopItem(shopItem: ShopItem) {
         shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))

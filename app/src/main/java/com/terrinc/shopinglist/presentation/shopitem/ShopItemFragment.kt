@@ -4,17 +4,20 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.terrinc.shopinglist.R
-import com.terrinc.shopinglist.data.ShopListRepositoryImp
+import com.terrinc.shopinglist.ShopListApp
 import com.terrinc.shopinglist.domain.ShopItem
-import com.terrinc.shopinglist.presentation.common.ShopListViewModelFactory
+import com.terrinc.shopinglist.presentation.ViewModelFactory
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment() {
 
@@ -24,11 +27,13 @@ class ShopItemFragment : Fragment() {
     private lateinit var etCount: TextInputEditText
     private lateinit var buttonSave: Button
 
-    private val viewModel by lazy {
-        ShopListViewModelFactory(
-            ShopListRepositoryImp(requireActivity().application)
-        ).create(ShopItemViewModel::class.java)
+    private val component by lazy {
+        (requireActivity().application as ShopListApp).component
     }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: ShopItemViewModel
 
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
@@ -45,6 +50,8 @@ class ShopItemFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
+        viewModel = ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
         super.onCreate(savedInstanceState)
         parseParams()
     }

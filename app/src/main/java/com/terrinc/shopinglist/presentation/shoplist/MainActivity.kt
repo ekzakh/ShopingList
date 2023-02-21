@@ -6,28 +6,41 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.terrinc.shopinglist.R
-import com.terrinc.shopinglist.data.ShopListRepositoryImp
-import com.terrinc.shopinglist.presentation.common.ShopListViewModelFactory
+import com.terrinc.shopinglist.ShopListApp
+import com.terrinc.shopinglist.presentation.ViewModelFactory
 import com.terrinc.shopinglist.presentation.shopitem.ShopItemActivity
 import com.terrinc.shopinglist.presentation.shopitem.ShopItemFragment
+import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener {
 
-    private val viewModel by lazy {
-        ShopListViewModelFactory(ShopListRepositoryImp(application)).create(ShopListViewModel::class.java)
-    }
-    private lateinit var shopListAdapter: ShopListAdapter
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    @Inject
+    lateinit var shopListAdapter: ShopListAdapter
+
+    private lateinit var viewModel: ShopListViewModel
     private var shopItemContainer: FragmentContainerView? = null
 
+    private val component by lazy {
+        (application as ShopListApp).component
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         shopItemContainer = findViewById(R.id.shopItemContainer)
         setupRecycler()
+
+        viewModel = ViewModelProvider(this, viewModelFactory)[ShopListViewModel::class.java]
+
         viewModel.shopList.observe(this) { shopList ->
             shopListAdapter.submitList(shopList)
         }
@@ -53,7 +66,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
     }
 
     private fun setupRecycler() {
-        shopListAdapter = ShopListAdapter()
         val recycler = findViewById<RecyclerView>(R.id.recycler)
         with(recycler) {
             adapter = shopListAdapter
