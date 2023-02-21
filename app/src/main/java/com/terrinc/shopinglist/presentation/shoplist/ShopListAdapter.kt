@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.terrinc.shopinglist.R
 import com.terrinc.shopinglist.domain.ShopItem
+import javax.inject.Inject
 
-class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
+class ShopListAdapter @Inject constructor() : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
     private var count = 0
 

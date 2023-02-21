@@ -1,6 +1,10 @@
 package com.terrinc.shopinglist.domain
 
-class EditShopItemUseCase(private val shopListRepository: ShopListRepository) {
+import javax.inject.Inject
+
+class EditShopItemUseCase @Inject constructor(
+    private val shopListRepository: ShopListRepository,
+) {
 
     suspend fun editItem(shopItem: ShopItem) {
         shopListRepository.editShopItem(shopItem)
