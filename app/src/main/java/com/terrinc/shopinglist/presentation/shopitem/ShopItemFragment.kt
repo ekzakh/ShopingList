@@ -1,6 +1,8 @@
 package com.terrinc.shopinglist.presentation.shopitem
 
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,9 +17,11 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.terrinc.shopinglist.R
 import com.terrinc.shopinglist.ShopListApp
+import com.terrinc.shopinglist.data.ShopItemProvider
 import com.terrinc.shopinglist.domain.ShopItem
 import com.terrinc.shopinglist.presentation.ViewModelFactory
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ShopItemFragment : Fragment() {
 
@@ -99,7 +103,16 @@ class ShopItemFragment : Fragment() {
 
     private fun launchAddMode() {
         buttonSave.setOnClickListener {
-            viewModel.addShopItem(etName.text.toString(), etCount.text.toString())
+//            viewModel.addShopItem(etName.text.toString(), etCount.text.toString())
+            thread {
+                val contentValues = ContentValues().apply {
+                    put(ShopItemProvider.ID, 0)
+                    put(ShopItemProvider.NAME, etName.text.toString())
+                    put(ShopItemProvider.COUNT, etCount.text.toString())
+                    put(ShopItemProvider.ENABLED, true)
+                }
+                context?.contentResolver?.insert(Uri.parse(ShopItemProvider.URI), contentValues)
+            }
         }
     }
 
