@@ -35,6 +35,10 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <provider
+            android:authorities="com.terrinc.shopinglist"
+            android:name=".data.ShopItemProvider"
+            android:exported="true" />
     </application>
 
 </manifest>

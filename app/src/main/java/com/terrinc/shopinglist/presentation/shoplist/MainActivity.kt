@@ -1,5 +1,6 @@
 package com.terrinc.shopinglist.presentation.shoplist
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
     @Inject
     lateinit var shopListAdapter: ShopListAdapter
 
@@ -52,6 +54,14 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
                 launchFragment(ShopItemFragment.newInstanceAddItem())
             }
         }
+
+        contentResolver.query(
+            Uri.parse("content://com.terrinc.shopinglist/shop_items/10"),
+            null,
+            null,
+            null,
+            null
+        )
     }
 
     private fun isOnePaneMode(): Boolean {
