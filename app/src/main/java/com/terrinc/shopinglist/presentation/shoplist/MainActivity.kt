@@ -13,10 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.terrinc.shopinglist.R
 import com.terrinc.shopinglist.ShopListApp
+import com.terrinc.shopinglist.data.ShopItemProvider
+import com.terrinc.shopinglist.domain.ShopItem
 import com.terrinc.shopinglist.presentation.ViewModelFactory
 import com.terrinc.shopinglist.presentation.shopitem.ShopItemActivity
 import com.terrinc.shopinglist.presentation.shopitem.ShopItemFragment
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener {
@@ -54,14 +57,25 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
                 launchFragment(ShopItemFragment.newInstanceAddItem())
             }
         }
+        thread {
+            val cursor = contentResolver.query(
+                Uri.parse("content://com.terrinc.shopinglist/shop_items"),
+                null,
+                null,
+                null,
+                null
+            )
+            while (cursor?.moveToNext() == true) {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(ShopItemProvider.ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(ShopItemProvider.NAME))
+                val count = cursor.getInt(cursor.getColumnIndexOrThrow(ShopItemProvider.COUNT))
+                val enabled = cursor.getInt(cursor.getColumnIndexOrThrow(ShopItemProvider.ENABLED)) > 0
 
-        contentResolver.query(
-            Uri.parse("content://com.terrinc.shopinglist/shop_items/10"),
-            null,
-            null,
-            null,
-            null
-        )
+                val shopItem = ShopItem(id = id, name = name, count = count, enabled = enabled)
+                Log.d("MainActivity", "$shopItem")
+            }
+            cursor?.close()
+        }
     }
 
     private fun isOnePaneMode(): Boolean {
