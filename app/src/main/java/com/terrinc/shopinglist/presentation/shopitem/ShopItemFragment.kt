@@ -97,7 +97,20 @@ class ShopItemFragment : Fragment() {
         }
         viewModel.getShopItem(shopItemId)
         buttonSave.setOnClickListener {
-            viewModel.editShopItem(etName.text.toString(), etCount.text.toString())
+//            viewModel.editShopItem(etName.text.toString(), etCount.text.toString())
+            thread {
+                val contentValues = ContentValues().apply {
+                    put(ShopItemProvider.NAME, etName.text.toString())
+                    put(ShopItemProvider.COUNT, etCount.text.toString())
+                }
+                val selectionArgs = arrayOf(shopItemId.toString())
+                context?.contentResolver?.update(
+                    Uri.parse(ShopItemProvider.URI),
+                    contentValues,
+                    null,
+                    selectionArgs
+                )
+            }
         }
     }
 

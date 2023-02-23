@@ -1,5 +1,6 @@
 package com.terrinc.shopinglist.presentation.shoplist
 
+import android.content.ContentValues
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -131,7 +132,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.EditFinishedListener 
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val shopItem = shopListAdapter.currentList[viewHolder.adapterPosition]
-                viewModel.deleteShopItem(shopItem)
+//                viewModel.deleteShopItem(shopItem)
+                thread {
+                    contentResolver.delete(Uri.parse(ShopItemProvider.URI), null, arrayOf(shopItem.id.toString()))
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(simpleCallback)

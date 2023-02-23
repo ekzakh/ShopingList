@@ -9,10 +9,13 @@ import android.util.Log
 import com.terrinc.shopinglist.ShopListApp
 import com.terrinc.shopinglist.domain.ShopItem
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ShopItemProvider : ContentProvider() {
 
@@ -55,7 +58,10 @@ class ShopItemProvider : ContentProvider() {
         TODO("Not yet implemented")
     }
 
-    override fun insert(uri: Uri, contentValues: ContentValues?): Uri? {
+    override fun insert(
+        uri: Uri,
+        contentValues: ContentValues?,
+    ): Uri? {
         when (uriMatcher.match(uri)) {
             QUERY_CODE -> {
                 if (contentValues == null) return null
@@ -73,17 +79,40 @@ class ShopItemProvider : ContentProvider() {
         return null
     }
 
-    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun delete(
+        uri: Uri,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ): Int {
         when(uriMatcher.match(uri)) {
             QUERY_CODE -> {
-
+                val id = selectionArgs?.get(0)?.toInt() ?: -1
+                return shopItemsDao.deleteShopItemSync(id)
             }
         }
         return 0
     }
 
-    override fun update(p0: Uri, p1: ContentValues?, p2: String?, p3: Array<out String>?): Int {
-        TODO("Not yet implemented")
+    override fun update(
+        uri: Uri,
+        contentValues: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ): Int {
+        when(uriMatcher.match(uri)) {
+            QUERY_CODE -> {
+                if (contentValues == null) return 0
+                val id = selectionArgs?.get(0)?.toInt() ?: -1
+                val name = contentValues.getAsString(NAME)
+                val count = contentValues.getAsInteger(COUNT)
+                scope.launch {
+                    val shopItemOld = shopItemsDao.getShopItem(id)
+                    val shopItemNew = shopItemOld.copy(name = name, count = count)
+                    shopItemsDao.addShopItem(shopItemNew)
+                }
+            }
+        }
+        return 0
     }
 
     companion object {
